@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat com WebSockets</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
+</head>
+<body>
+    <h1>Chat</h1>
+    <input type="text" id="username" placeholder="Nome de usuário">
+    <input type="text" id="message" placeholder="Digite sua mensagem aqui...">
+
+    <button onclick="sendMessage()">Enviar</button>
+
+    <br>
+
+    <ul id="chat" style="list-style: none;"></ul>
+</body>
+<script>
+    var socket = new SockJS('http://localhost:8080/chat');
+    var stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function (frame) {
+        console.log('Conectado: ' + frame);
+
+        stompClient.subscribe('/topic/messages', function (msg) {
+            var message = JSON.parse(msg.body);
+            var chat = document.getElementById('chat');
+            var li = document.createElement('li');
+            li.innerText = message.sender + ": " + message.content;
+            chat.appendChild(li);
+        });
+    });
+
+    function sendMessage() {
+        var sender = document.getElementById('username').value;
+        var content = document.getElementById('message').value;
+
+        stompClient.send("/app/sendMessage", {}, JSON.stringify({
+            sender: sender,
+            content: content
+        }));
+    }
+</script>
+</html>
