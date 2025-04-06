@@ -6,42 +6,59 @@
     <title>Chat com WebSockets</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            min-width: 300px;
+        }
+    </style>
 </head>
 <body>
     <h1>Chat</h1>
-    <input type="text" id="username" placeholder="Nome de usuário">
-    <input type="text" id="message" placeholder="Digite sua mensagem aqui...">
+    <h2>Salas disponíveis:</h2>
+    <ul id="salas"></ul>
 
-    <button onclick="sendMessage()">Enviar</button>
+    <!-- MODAL SENHA -->
+    <div id="modalSenha" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title">Entrar na sala</h3>
+            <input id="password-input" type="password" placeholder="Digite a senha">
+            <button onclick="confirmarSenha()">Confirmar</button>
+            <button onclick="fecharModal('modalSenha')">Cancelar</button>
+        </div>
+    </div>
 
-    <br>
+    <!-- MODAL NOME -->
+    <div id="modalNome" class="modal">
+        <div class="modal-content">
+            <h3>Digite seu nome:</h3>
+            <input type="text" id="nome-usuario" placeholder="Seu nome...">
+            <button onclick="confirmarNome()">Entrar no Chat</button>
+        </div>
+    </div>
 
-    <ul id="chat" style="list-style: none;"></ul>
+    <!-- MODAL CHAT -->
+    <div id="modalChat" class="modal">
+        <div class="modal-content" style="width: 80%; height: 80%;">
+            <h2>Chat da sala: <span id="chat-room-title"></span></h2>
+            <div id="mensagens" style="border: 1px solid #ccc; height: 300px; overflow-y: scroll; margin-bottom: 10px; padding: 5px;"></div>
+            <input type="text" id="mensagem" placeholder="Digite sua mensagem">
+            <button onclick="enviarMensagem()">Enviar</button>
+            <button onclick="sairDoChat()">Sair</button>
+        </div>
+    </div>
+    
+<script src="script.js"></script>
 </body>
-<script>
-    var socket = new SockJS('http://localhost:8080/chat');
-    var stompClient = Stomp.over(socket);
-
-    stompClient.connect({}, function (frame) {
-        console.log('Conectado: ' + frame);
-
-        stompClient.subscribe('/topic/messages', function (msg) {
-            var message = JSON.parse(msg.body);
-            var chat = document.getElementById('chat');
-            var li = document.createElement('li');
-            li.innerText = message.sender + ": " + message.content;
-            chat.appendChild(li);
-        });
-    });
-
-    function sendMessage() {
-        var sender = document.getElementById('username').value;
-        var content = document.getElementById('message').value;
-
-        stompClient.send("/app/sendMessage", {}, JSON.stringify({
-            sender: sender,
-            content: content
-        }));
-    }
-</script>
 </html>
