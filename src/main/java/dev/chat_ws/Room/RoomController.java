@@ -14,7 +14,7 @@ public class RoomController {
     private final RoomService roomService;
 
     @GetMapping
-    public ResponseEntity<List<RoomModel>> getAll(){
+    public ResponseEntity<List<RoomModel>> getAll() {
         var roomsList = roomService.getAllRooms();
         return ResponseEntity.ok(roomsList);
     }
@@ -35,5 +35,11 @@ public class RoomController {
     public ResponseEntity<RoomModel> update(@PathVariable String title, @RequestBody UpdateRoomDto roomData){
         var updatedRoom = roomService.updateRoom(title, roomData);
         return ResponseEntity.ok(updatedRoom);
+    }
+
+    @PostMapping("/validate")
+    public ResponseEntity<Boolean> validatePassword(@RequestBody RoomPasswordDto data) {
+        var isValid = roomService.validateRoomPassword(data);
+        return ResponseEntity.ok(isValid);
     }
 }
