@@ -1,19 +1,11 @@
 package dev.chat_ws.Chat;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Data
 @Getter @Setter
-@NoArgsConstructor
+@NoArgsConstructor @AllArgsConstructor
 public class MessageModel {
     private String sender;
     private String content;
-
-    public MessageModel(String sender, String content) {
-        this.sender = sender;
-        this.content = content;
-    }
 }

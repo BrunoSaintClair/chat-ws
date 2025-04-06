@@ -34,4 +34,9 @@ public class RoomService {
 
         return roomRepository.save(room);
     }
+
+    public Boolean validateRoomPassword(RoomPasswordDto data) {
+        RoomModel room = roomRepository.findByTitle(data.title());
+        return room.getPassword().equals(data.password());
+    }
 }
